@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const { dbConnection } = require("./database/config");
 require("dotenv").config();
@@ -12,13 +13,13 @@ dbConnection();
 // CORS
 app.use(cors());
 
+// BodyParser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 // Rutas
-app.get("/", (req, res) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Hola Mundo",
-  });
-});
+app.use("/usuario", require("./routes/usuarios"));
+app.use("/login", require("./routes/auth"));
 
 app.listen(process.env.PORT, () => {
   console.log("Servidor corriendo en puerto " + process.env.PORT);
