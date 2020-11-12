@@ -18,10 +18,11 @@ const validarJWT = (req, res, next) => {
     req.usuarioId = usuarioId; // Localizar el Id del usuario que realizó la petición
 
     next();
-  } catch (error) {
+  } catch (err) {
     return res.status(401).json({
       ok: false,
       mensaje: "Token no válido.",
+      errors: err,
     });
   }
 };

@@ -7,11 +7,17 @@ const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/jwt");
 
 const obtenerUsuarios = async (req, res) => {
-  const usuarios = await Usuario.find({}, "nombre email role google");
+  const desde = Number(req.query.desde) || 0;
+
+  const [usuarios, totalRegistros] = await Promise.all([
+    Usuario.find({}, "nombre email img role google").skip(desde).limit(5),
+    Usuario.countDocuments(),
+  ]);
 
   res.status(200).json({
     ok: true,
     usuarios,
+    totalRegistros,
     usuarioId: req.usuarioId, // Obtener el Id del usuario que realizó la petición
   });
 };
@@ -47,7 +53,7 @@ const crearUsuario = async (req, res = response) => {
       token,
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
       mensaje: "Error en el servidor.",
       errors: err,
@@ -95,8 +101,8 @@ const actualizarUsuario = async (req, res = response) => {
       ok: true,
       usuario: usuarioActualizado,
     });
-  } catch (error) {
-    res.status(500).json({
+  } catch (err) {
+    return res.status(500).json({
       ok: false,
       mensaje: "Error en el servidor.",
       errors: err,
@@ -123,8 +129,8 @@ const eliminarUsuario = async (req, res = response) => {
       ok: true,
       mensaje: "Usuario eliminado exitosamente.",
     });
-  } catch (error) {
-    res.status(500).json({
+  } catch (err) {
+    return res.status(500).json({
       ok: false,
       mensaje: "Error en el servidor.",
       errors: err,

@@ -36,8 +36,8 @@ const login = async (req, res = response) => {
       ok: true,
       token,
     });
-  } catch (error) {
-    res.status(500).json({
+  } catch (err) {
+    return res.status(500).json({
       ok: false,
       mensaje: "Error en el servidor.",
       errors: err,
