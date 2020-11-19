@@ -11,6 +11,9 @@ const app = express();
 // Conexión a base de datos
 dbConnection();
 
+// Directorio público
+app.use(express.static("public"));
+
 // CORS
 app.use(cors());
 
