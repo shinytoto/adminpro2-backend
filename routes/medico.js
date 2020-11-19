@@ -20,7 +20,15 @@ router.post(
   ],
   MedicoController.crearMedico
 );
-router.put("/:id", MedicoController.actualizarMedico);
-router.delete("/:id", MedicoController.eliminarMedico);
+router.put(
+  "/:id",
+  [
+    validarJWT,
+    check("nombre", "El nombre del médico no puede estar vacío.").not().isEmpty(),
+    validarCampos,
+  ],
+  MedicoController.actualizarMedico
+);
+router.delete("/:id", validarJWT, MedicoController.eliminarMedico);
 
 module.exports = router;

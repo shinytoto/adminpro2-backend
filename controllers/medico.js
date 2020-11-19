@@ -5,7 +5,10 @@ const { response } = require("express");
 const Medico = require("../models/medico");
 
 const obtenerMedicos = async (req, res = response) => {
-  const medicos = await Medico.find().populate("usuario hospital", "nombre img");
+  const medicos = await Medico.find().populate(
+    "usuario hospital",
+    "nombre img"
+  );
 
   res.status(200).json({
     ok: true,
@@ -34,18 +37,67 @@ const crearMedico = async (req, res = response) => {
   }
 };
 
-const actualizarMedico = (req, res = response) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Hola Mundo",
-  });
+const actualizarMedico = async (req, res = response) => {
+  const medicoId = req.params.id;
+  const usuarioId = req.usuarioId;
+
+  try {
+    const medicoDB = await Medico.findById(medicoId);
+
+    if (!medicoDB) {
+      res.status(404).json({
+        ok: false,
+        mensaje: "Médico no encontrado.",
+      });
+    }
+
+    const parametrosModificados = { ...req.body, usuario: usuarioId };
+
+    const medicoActualizado = await Medico.findByIdAndUpdate(
+      medicoId,
+      parametrosModificados,
+      { new: true }
+    );
+
+    res.status(200).json({
+      ok: true,
+      médico: medicoActualizado,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error en el servidor.",
+      errors: err,
+    });
+  }
 };
 
-const eliminarMedico = (req, res = response) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Hola Mundo",
-  });
+const eliminarMedico = async (req, res = response) => {
+  const medicoId = req.params.id;
+
+  try {
+    const medicoDB = await Medico.findById(medicoId);
+
+    if (!medicoDB) {
+      res.status(404).json({
+        ok: false,
+        mensaje: "Médico no encontrado.",
+      });
+    }
+
+    await Medico.findByIdAndRemove(medicoId);
+
+    res.status(200).json({
+      ok: true,
+      mensaje: "Médico eliminado exitosamente.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error en el servidor.",
+      errors: err,
+    });
+  }
 };
 
 module.exports = {

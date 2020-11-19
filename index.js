@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Rutas
-app.use("/login", require("./routes/auth"));
+app.use("/auth", require("./routes/auth"));
 app.use("/usuario", require("./routes/usuario"));
 app.use("/hospital", require("./routes/hospital"));
 app.use("/medico", require("./routes/medico"));

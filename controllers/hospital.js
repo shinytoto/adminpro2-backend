@@ -34,18 +34,67 @@ const crearHospital = async (req, res = response) => {
   }
 };
 
-const actualizarHospital = (req, res = response) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Hola Mundo",
-  });
+const actualizarHospital = async (req, res = response) => {
+  const hospitalId = req.params.id;
+  const usuarioId = req.usuarioId;
+
+  try {
+    const hospitalDB = await Hospital.findById(hospitalId);
+
+    if (!hospitalDB) {
+      res.status(404).json({
+        ok: false,
+        mensaje: "Hospital no encontrado.",
+      });
+    }
+
+    const parametrosModificados = { ...req.body, usuario: usuarioId };
+
+    const hospitalActualizado = await Hospital.findByIdAndUpdate(
+      hospitalId,
+      parametrosModificados,
+      { new: true }
+    );
+
+    res.status(200).json({
+      ok: true,
+      hospital: hospitalActualizado,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error en el servidor.",
+      errors: err,
+    });
+  }
 };
 
-const eliminarHospital = (req, res = response) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Hola Mundo",
-  });
+const eliminarHospital = async (req, res = response) => {
+  const hospitalId = req.params.id;
+
+  try {
+    const hospitalDB = await Hospital.findById(hospitalId);
+
+    if (!hospitalDB) {
+      res.status(404).json({
+        ok: false,
+        mensaje: "Hospital no encontrado.",
+      });
+    }
+
+    await Hospital.findByIdAndRemove(hospitalId);
+
+    res.status(200).json({
+      ok: true,
+      mensaje: "Hospital eliminado exitosamente.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error en el servidor.",
+      errors: err,
+    });
+  }
 };
 
 module.exports = {
