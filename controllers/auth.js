@@ -6,7 +6,6 @@ const bcrypt = require("bcryptjs");
 const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/jwt");
 const { googleVerify } = require("../helpers/google-verify");
-const usuario = require("../models/usuario");
 
 const login = async (req, res = response) => {
   const { email, password } = req.body;
@@ -98,8 +97,12 @@ const renovarToken = async (req, res = response) => {
   // Generar JsonWebToken
   const token = await generarJWT(usuarioId);
 
+  // Obtener el usuario por UID
+  const usuarioDB = await Usuario.findById(usuarioId);
+
   res.status(200).json({
     ok: true,
+    usuarioDB,
     token,
   });
 };
