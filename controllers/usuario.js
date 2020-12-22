@@ -7,12 +7,11 @@ const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/jwt");
 
 const obtenerUsuarios = async (req, res) => {
+  // ? Con promesas
+
   const desde = Number(req.query.desde) || 0;
 
-  const [usuarios, totalRegistros] = await Promise.all([
-    Usuario.find({}, "nombre email img role google").skip(desde).limit(5),
-    Usuario.countDocuments(),
-  ]);
+  const [usuarios, totalRegistros] = await Promise.all([Usuario.find({}, "nombre email img role google").skip(desde).limit(5), Usuario.countDocuments()]);
 
   res.status(200).json({
     ok: true,
@@ -20,6 +19,38 @@ const obtenerUsuarios = async (req, res) => {
     totalRegistros,
     usuarioId: req.usuarioId, // Obtener el Id del usuario que realizó la petición
   });
+
+  // * Con callbacks
+
+  // var desde = req.query.desde || 0;
+  // desde = Number(desde);
+
+  // Usuario.find()
+  //   .skip(desde)
+  //   .limit(5)
+  //   .exec((err, usuarios) => {
+  //     if (err)
+  //       return res.status(500).json({
+  //         ok: false,
+  //         mensaje: "Error al obtener usuarios.",
+  //         errors: err,
+  //       });
+
+  //     Usuario.countDocuments((err, conteo) => {
+  //       if (err)
+  //         return res.status(500).json({
+  //           ok: false,
+  //           mensaje: "Error al contar los usuarios.",
+  //           errors: err,
+  //         });
+
+  //       res.status(200).json({
+  //         ok: true,
+  //         usuarios,
+  //         totalRegistros: conteo,
+  //       });
+  //     });
+  //   });
 };
 
 const crearUsuario = async (req, res = response) => {
@@ -98,11 +129,7 @@ const actualizarUsuario = async (req, res = response) => {
       });
     }
 
-    const usuarioActualizado = await Usuario.findByIdAndUpdate(
-      usuarioId,
-      campos,
-      { new: true }
-    );
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(usuarioId, campos, { new: true });
 
     res.status(200).json({
       ok: true,

@@ -17,8 +17,6 @@ const actualizarImagen = async (tipo, id, nombreArchivo) => {
         console.log("No se encontro un usuario con ese id.");
         return false;
       }
-      console.log(usuario);
-
       // Borrar el archivo ya existente
       pathViejo = `./uploads/usuario/${usuario.img}`;
       borrarImagen(pathViejo);

@@ -10,6 +10,9 @@ const MedicoController = require("../controllers/medico");
 const router = Router();
 
 router.get("/", validarJWT, MedicoController.obtenerMedicos);
+
+router.get("/:id", validarJWT, MedicoController.obtenerMedico);
+
 router.post(
   "/",
   [
@@ -29,6 +32,7 @@ router.put(
   ],
   MedicoController.actualizarMedico
 );
+
 router.delete("/:id", validarJWT, MedicoController.eliminarMedico);
 
 module.exports = router;

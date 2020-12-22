@@ -5,15 +5,34 @@ const { response } = require("express");
 const Medico = require("../models/medico");
 
 const obtenerMedicos = async (req, res = response) => {
-  const medicos = await Medico.find().populate(
-    "usuario hospital",
-    "nombre img"
-  );
+  const desde = Number(req.query.desde) || 0;
+
+  const [medicos, totalRegistros] = await Promise.all([Medico.find({}).populate("usuario hospital", "nombre img").skip(desde).limit(5), Medico.countDocuments()]);
 
   res.status(200).json({
     ok: true,
     medicos,
+    totalRegistros,
   });
+};
+
+const obtenerMedico = async (req, res = response) => {
+  const id = req.params.id;
+
+  try {
+    const medicoDB = await Medico.findById(id).populate("usuario hospital", "nombre img");
+
+    res.status(200).json({
+      ok: true,
+      medico: medicoDB,
+    });
+  } catch (err) {
+    res.status(400).json({
+      ok: false,
+      mensaje: "Usuario no encontrado",
+      errors: err,
+    });
+  }
 };
 
 const crearMedico = async (req, res = response) => {
@@ -53,11 +72,7 @@ const actualizarMedico = async (req, res = response) => {
 
     const parametrosModificados = { ...req.body, usuario: usuarioId };
 
-    const medicoActualizado = await Medico.findByIdAndUpdate(
-      medicoId,
-      parametrosModificados,
-      { new: true }
-    );
+    const medicoActualizado = await Medico.findByIdAndUpdate(medicoId, parametrosModificados, { new: true });
 
     res.status(200).json({
       ok: true,
@@ -102,6 +117,7 @@ const eliminarMedico = async (req, res = response) => {
 
 module.exports = {
   obtenerMedicos,
+  obtenerMedico,
   crearMedico,
   actualizarMedico,
   eliminarMedico,
